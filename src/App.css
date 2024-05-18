@@ -1,4 +1,9 @@
 body {
-  width: 100vw;
-  height: 200vh;
+  height: 10000vh;
+}
+
+* {
+  padding: 0;
+  margin: 0;
+  font-family: "Roboto";
 }
