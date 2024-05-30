@@ -1,13 +1,31 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
-import macrosPlugin from "babel-plugin-macros";
+import tsconfigPaths from 'vite-tsconfig-paths';
+import { viteStaticCopy } from 'vite-plugin-static-copy';
 
 export default defineConfig({
   plugins: [
-    react({
-      babel: {
-        plugins: ["babel-plugin-glsl", macrosPlugin]
-      }
+    react(),
+    tsconfigPaths(),
+    viteStaticCopy({
+      targets: [
+        {
+          src: 'src/gltf/*',
+          dest: 'gltf'
+        }
+      ]
     })
-  ]
+  ],
+  build: {
+    rollupOptions: {
+      output: {
+        assetFileNames: 'assets/[name].[hash][extname]'
+      }
+    }
+  },
+  resolve: {
+    alias: {
+      '@gltf': '/src/gltf'
+    }
+  }
 });

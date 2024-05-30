@@ -11,16 +11,14 @@ Title: Simple Concert Stage
 import React, { useRef } from "react";
 import { useGLTF } from "@react-three/drei";
 
-export function Concert_hall(props) {
+export default function Simple_Concert_Stage(props) {
   const { nodes, materials } = useGLTF("/simple_concert_stage.glb");
   return (
     <group {...props} dispose={null}>
       <mesh
         geometry={nodes["concert-stagemainfinal__0"].geometry}
         material={materials["Scene_-_Root"]}
-        position={[0, -6.206, -858.955]}
         rotation={[-Math.PI / 2, 0, 0]}
-        scale={100}
       />
     </group>
   );

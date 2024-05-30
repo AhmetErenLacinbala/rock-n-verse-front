@@ -4,11 +4,14 @@ import "./App.css";
 import { Canvas, MeshProps, ThreeElements, useFrame } from "@react-three/fiber";
 import { Mesh, Vector3 } from "three";
 import { Token } from "./models/Token";
-import { Concert_hall } from "./models/Simple_concert_stage";
+import Simple_Concert_Stage, {
+  Concert_hall,
+} from "./models/Simple_concert_stage";
 import Plane from "./models/plane";
 import { Perf } from "r3f-perf";
 import {
   CameraControls,
+  Environment,
   OrbitControls,
   Text,
   useScroll,
@@ -17,9 +20,11 @@ import {
 import { ReactLenis, useLenis } from "lenis/react";
 import { useWindowScrollPositions } from "./hooks/my_hooks";
 import * as THREE from "three";
-import { Fire } from "./comps/Particles";
+import { CubeFireParticle, Fire } from "./comps/Particles";
 import GridPlane from "./models/GridPlane";
 import { Bloom, EffectComposer } from "@react-three/postprocessing";
+import { CubeByJc } from "@models/Cubebyjc";
+import { PerspectiveCamera } from "@theatre/r3f";
 
 interface CylinderProps extends MeshProps {
   position?: Vector3 | [number, number, number];
@@ -51,7 +56,11 @@ function Box(props: ThreeElements["mesh"]) {
     >
       <boxGeometry args={[1, 1, 1]} />
 
-      <meshStandardMaterial color={hovered ? "hotpink" : "orange"} />
+      <meshStandardMaterial
+        metalness={0.9}
+        roughness={0.1}
+        color={hovered ? "hotpink" : "orange"}
+      />
     </mesh>
   );
 }
@@ -84,156 +93,166 @@ function App() {
           zIndex: "30",
         }}
       >
-        <Canvas camera={{ position: [0, -2, 2] }}>
+        <Canvas
+          camera={{
+            position: [0, -2, 2.5],
+            rotation: [Math.PI / 3, 0, 0],
+          }}
+        >
           <EffectComposer>
             <Perf position="top-left" />
             <Bloom mipmapBlur luminanceThreshold={1} />
             <TheComp scrollCount={scrollCount} />
+            <Environment path="cube" />
             <OrbitControls />
           </EffectComposer>
         </Canvas>
       </div>
-      <div
-        style={{
-          zIndex: "30",
-          width: "100vw",
-          position: "absolute",
-          top: "0",
-          color: "black",
-          visibility: "hidden",
-        }}
-      >
+      {
         <div
           style={{
-            boxSizing: "border-box",
-
-            textAlign: "center",
-            margin: "auto",
-            width: "50vw",
-            fontSize: "64px",
-            marginTop: "100vw",
-          }}
-        >
-          <p
-            style={{
-              backgroundColor: "white",
-            }}
-          >
-            1Lorem ipsum dolor sit amet, consectetur adipisicing elit. Pariatur,
-            rerum ratione. Placeat, alias maxime autem esse molestiae tempore
-            obcaecati non quaerat? Eligendi unde sit ex neque, perferendis
-            tempora molestiae corrupti vero velit maxime at odio similique
-            cupiditate dicta rem soluta quaerat consequuntur. Praesentium nemo
-            facere tempora
-          </p>
-        </div>
-
-        <div
-          style={{
-            textAlign: "right",
-            margin: "auto",
-            width: "40vw",
-            marginTop: "400vh",
-            fontSize: "64px",
-          }}
-        >
-          <p
-            style={{
-              backgroundColor: "white",
-              position: "absolute",
-            }}
-          >
-            2Lorem ipsum dolor sit amet, consectetur adipisicing elit. Pariatur,
-            rerum ratione. Placeat, alias maxime autem esse molestiae tempore
-            obcaecati non quaerat? Eligendi unde sit ex neque, perferendis
-            tempora molestiae corrupti vero velit maxime at odio similique
-            cupiditate dicta rem soluta quaerat consequuntur. Praesentium nemo
-            facere tempora Lorem ipsum dolor sit amet, consectetur adipisicing
-            elit. Pariatur, rerum ratione. Placeat, alias maxime autem esse
-            molestiae tempore obcaecati non quaerat? Eligendi unde sit ex neque,
-            perferendis tempora molestiae corrupti vero velit maxime at odio
-            similique cupiditate dicta rem soluta quaerat consequuntur.
-            Praesentium nemo facere tempora. Placeat, alias maxime autem esse
-            molestiae tempore obcaecati non quaerat? Eligendi unde sit ex neque,
-            perferendis tempora molestiae corrupti vero velit maxime at odio
-            similique cupiditate dicta rem soluta quaerat consequuntur.
-            Praesentium nemo facere tempora Lorem ipsum dolor sit amet,
-            consectetur adipisicing elit. Pariatur, rerum ratione. Placeat,
-            alias maxime autem esse molestiae tempore obcaecati non quaerat?
-            Eligendi unde sit ex neque, perferendis tempora molestiae corrupti
-            vero velit maxime at odio similique cupiditate dicta rem soluta
-            quaerat consequuntur. Praesentium nemo facere tempora
-          </p>
-        </div>
-        <div
-          style={{
-            textAlign: "right",
-            margin: "auto",
-            width: "40vw",
-            marginTop: "400vh",
-            fontSize: "64px",
+            zIndex: "30",
+            width: "100vw",
             position: "absolute",
+            top: "0",
+            color: "black",
+            visibility: "hidden",
+          }}
+        >
+          <div
+            style={{
+              boxSizing: "border-box",
 
-            left: "10vw",
-          }}
-        >
-          <p
+              textAlign: "center",
+              margin: "auto",
+              width: "50vw",
+              fontSize: "64px",
+              marginTop: "100vw",
+            }}
+          >
+            <p
+              style={{
+                backgroundColor: "white",
+              }}
+            >
+              1Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+              Pariatur, rerum ratione. Placeat, alias maxime autem esse
+              molestiae tempore obcaecati non quaerat? Eligendi unde sit ex
+              neque, perferendis tempora molestiae corrupti vero velit maxime at
+              odio similique cupiditate dicta rem soluta quaerat consequuntur.
+              Praesentium nemo facere tempora
+            </p>
+          </div>
+
+          <div
             style={{
-              backgroundColor: "white",
+              textAlign: "right",
+              margin: "auto",
+              width: "40vw",
+              marginTop: "400vh",
+              fontSize: "64px",
+            }}
+          >
+            <p
+              style={{
+                backgroundColor: "white",
+                position: "absolute",
+              }}
+            >
+              2Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+              Pariatur, rerum ratione. Placeat, alias maxime autem esse
+              molestiae tempore obcaecati non quaerat? Eligendi unde sit ex
+              neque, perferendis tempora molestiae corrupti vero velit maxime at
+              odio similique cupiditate dicta rem soluta quaerat consequuntur.
+              Praesentium nemo facere tempora Lorem ipsum dolor sit amet,
+              consectetur adipisicing elit. Pariatur, rerum ratione. Placeat,
+              alias maxime autem esse molestiae tempore obcaecati non quaerat?
+              Eligendi unde sit ex neque, perferendis tempora molestiae corrupti
+              vero velit maxime at odio similique cupiditate dicta rem soluta
+              quaerat consequuntur. Praesentium nemo facere tempora. Placeat,
+              alias maxime autem esse molestiae tempore obcaecati non quaerat?
+              Eligendi unde sit ex neque, perferendis tempora molestiae corrupti
+              vero velit maxime at odio similique cupiditate dicta rem soluta
+              quaerat consequuntur. Praesentium nemo facere tempora Lorem ipsum
+              dolor sit amet, consectetur adipisicing elit. Pariatur, rerum
+              ratione. Placeat, alias maxime autem esse molestiae tempore
+              obcaecati non quaerat? Eligendi unde sit ex neque, perferendis
+              tempora molestiae corrupti vero velit maxime at odio similique
+              cupiditate dicta rem soluta quaerat consequuntur. Praesentium nemo
+              facere tempora
+            </p>
+          </div>
+          <div
+            style={{
+              textAlign: "right",
+              margin: "auto",
+              width: "40vw",
+              marginTop: "400vh",
+              fontSize: "64px",
               position: "absolute",
+
+              left: "10vw",
             }}
           >
-            3Lorem ipsum dolor sit amet, consectetur adipisicing elit. Pariatur,
-            rerum ratione. Placeat, alias maxime autem esse molestiae tempore
-            obcaecati non quaerat? Eligendi unde sit ex neque, perferendis
-            tempora molestiae corrupti vero velit maxime at odio similique
-            cupiditate dicta rem soluta quaerat consequuntur. Praesentium nemo
-            facere tempora Lorem ipsum dolor sit amet, consectetur adipisicing
-            elit. Pariatur, rerum ratione. Placeat, alias maxime autem esse
-            molestiae tempore obcaecati non quaerat? Eligendi unde sit ex neque,
-            perferendis tempora molestiae corrupti vero velit maxime at odio
-            similique cupiditate dicta rem soluta quaerat consequuntur.
-            Praesentium nemo facere tempora. Placeat, alias maxime autem esse
-            molestiae tempore obcaecati non quaerat? Eligendi unde sit ex neque,
-            perferendis tempora molestiae corrupti vero velit maxime at odio
-            similique cupiditate dicta rem soluta quaerat consequuntur.
-            Praesentium nemo facere tempora Lorem ipsum dolor sit amet,
-            consectetur adipisicing elit. Pariatur, rerum ratione. Placeat,
-            alias maxime autem esse molestiae tempore obcaecati non quaerat?
-            Eligendi unde sit ex neque, perferendis tempora molestiae corrupti
-            vero velit maxime at odio similique cupiditate dicta rem soluta
-            quaerat consequuntur. Praesentium nemo facere tempora
-          </p>
-        </div>
-        <div
-          style={{
-            textAlign: "right",
-            margin: "auto",
-            width: "40vw",
-            marginTop: "100vh",
-            fontSize: "64px",
-            marginTop: "100vw",
-          }}
-        >
-          <p
+            <p
+              style={{
+                backgroundColor: "white",
+                position: "absolute",
+              }}
+            >
+              3Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+              Pariatur, rerum ratione. Placeat, alias maxime autem esse
+              molestiae tempore obcaecati non quaerat? Eligendi unde sit ex
+              neque, perferendis tempora molestiae corrupti vero velit maxime at
+              odio similique cupiditate dicta rem soluta quaerat consequuntur.
+              Praesentium nemo facere tempora Lorem ipsum dolor sit amet,
+              consectetur adipisicing elit. Pariatur, rerum ratione. Placeat,
+              alias maxime autem esse molestiae tempore obcaecati non quaerat?
+              Eligendi unde sit ex neque, perferendis tempora molestiae corrupti
+              vero velit maxime at odio similique cupiditate dicta rem soluta
+              quaerat consequuntur. Praesentium nemo facere tempora. Placeat,
+              alias maxime autem esse molestiae tempore obcaecati non quaerat?
+              Eligendi unde sit ex neque, perferendis tempora molestiae corrupti
+              vero velit maxime at odio similique cupiditate dicta rem soluta
+              quaerat consequuntur. Praesentium nemo facere tempora Lorem ipsum
+              dolor sit amet, consectetur adipisicing elit. Pariatur, rerum
+              ratione. Placeat, alias maxime autem esse molestiae tempore
+              obcaecati non quaerat? Eligendi unde sit ex neque, perferendis
+              tempora molestiae corrupti vero velit maxime at odio similique
+              cupiditate dicta rem soluta quaerat consequuntur. Praesentium nemo
+              facere tempora
+            </p>
+          </div>
+          <div
             style={{
-              backgroundColor: "white",
+              textAlign: "right",
+              margin: "auto",
+              width: "40vw",
+              marginTop: "100vh",
+              fontSize: "64px",
+              marginTop: "100vw",
             }}
           >
-            4alo ipsum dolor sit amet, consectetur adipisicing elit. Pariatur,
-            rerum ratione. Placeat, alias maxime autem esse molestiae tempore
-            obcaecati non quaerat? Eligendi unde sit ex neque, perferendis
-            tempora molestiae corrupti vero velit maxime at odio similique
-            cupiditate dicta rem soluta quaerat consequuntur. Praesentium nemo
-            facere tempora Lorem ipsum dolor sit amet, consectetur adipisicing
-            elit. Pariatur, rerum ratione. Placeat, alias maxime autem esse
-            molestiae tempore obcaecati non quaerat? Eligendi unde sit ex neque,
-            perferendis tempora molestiae corrupti vero velit maxime at odio
-            similique cupiditate dicta rem soluta quaerat consequuntur.
-            Praesentium nemo facere tempora
-          </p>
+            <p
+              style={{
+                backgroundColor: "white",
+              }}
+            >
+              4alo ipsum dolor sit amet, consectetur adipisicing elit. Pariatur,
+              rerum ratione. Placeat, alias maxime autem esse molestiae tempore
+              obcaecati non quaerat? Eligendi unde sit ex neque, perferendis
+              tempora molestiae corrupti vero velit maxime at odio similique
+              cupiditate dicta rem soluta quaerat consequuntur. Praesentium nemo
+              facere tempora Lorem ipsum dolor sit amet, consectetur adipisicing
+              elit. Pariatur, rerum ratione. Placeat, alias maxime autem esse
+              molestiae tempore obcaecati non quaerat? Eligendi unde sit ex
+              neque, perferendis tempora molestiae corrupti vero velit maxime at
+              odio similique cupiditate dicta rem soluta quaerat consequuntur.
+              Praesentium nemo facere tempora
+            </p>
+          </div>
         </div>
-      </div>
+      }
     </div>
   );
 }
@@ -243,14 +262,11 @@ for (let i = 0; i < 300; i++) {
   arr.push(Math.random() * 30);
 }*/
 function TheComp(props) {
-  const [particleCubeValues, setParticleCuberValues] = useState<number[]>();
   const { scrollCount } = props;
   const tokenRef = useRef();
   const gridRef = useRef();
   const helloWordRef = useRef();
   const [hover, setHover] = useState<boolean>(false);
-
-  const particalRef = useRef();
   const cubeParticleRef = useRef();
 
   useFrame((state, delta) => (cubeParticleRef.current.rotation.y += delta));
@@ -263,38 +279,14 @@ function TheComp(props) {
   useEffect(() => {
     console.log("scrollcount: ", scrollCount);
     if (scrollCount > 6) {
+      tokenRef.current.visible = true;
       tokenRef.current.position.x = scrollCount / 1 - 14;
 
       tokenRef.current.rotation.z = -scrollCount / 1;
+    } else {
+      tokenRef.current.visible = false;
     }
   });
-
-  /*useEffect(() => {
-    const particleGeometry = new THREE.BoxGeometry(1, 1, 1);
-    const particlePositions = new Float32Array(100 * 3);
-
-    // Set all positions to zero
-    for (let i = 0; i < particlePositions.length; i += 4) {
-      particlePositions[i + 0] = 2;
-      particlePositions[i + 1] = 0;
-      particlePositions[i + 2] = 0;
-    }
-
-    console.log("particle positions: ", particlePositions);
-    particleGeometry.setAttribute(
-      "position",
-      new THREE.BufferAttribute(particlePositions, 3)
-    );
-
-    const particleMaterial = new THREE.PointsMaterial({
-      color: 0xffffff,
-      size: 1,
-    });
-
-    particalRef.current.geometry = particleGeometry;
-    particalRef.current.material = particleMaterial;
-    console.log(particalRef.current.position);
-  }, []);*/
 
   return (
     <mesh>
@@ -322,9 +314,10 @@ function TheComp(props) {
           decay={0}
           intensity={Math.PI / 2}
         />
-        <Box position={[-1.2, 0, 0]} />
-        <Box position={[1.2, 0, 0]} />
+        <Box position={[-1.2, -2, -2]} />
+        <Box position={[1.2, -2, -2]} />
         <Text
+          visible={false}
           position={[0, -2, 1.2]}
           scale={hover ? [0.6, 0.6, 0.6] : [0.2, 0.2, 0.2]}
           rotation={[Math.PI / 2, 0, 0]}
@@ -335,17 +328,42 @@ function TheComp(props) {
           onClick={() => setHover(!hover)}
           color={hover ? "hotpink" : "orange"}
         >
-          Yarak Gibi Şarkı Elif
+          hello world
         </Text>
-        <Cylinder position={[-3, 0, 0]} />
+
         <pointLight
           position={[-10, -10, -10]}
           decay={0}
           intensity={Math.PI / 2}
         />
 
-        <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, -2, 1]}>
-          <GridPlane />
+        <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, 0, 0]}>
+          <GridPlane scrollCount={scrollCount} />
+          <GridPlane
+            scrollCount={scrollCount}
+            position={[0, -0.0001, -4.5]}
+            scale={[-1, 1, 1]}
+          />
+
+          <mesh position={[0, 1, 0]}>
+            <mesh position={[0, 1, 0]}>
+              <CubeFireParticle speed={0.001} color={0x000000} particles={50} />
+            </mesh>
+            <CubeFireParticle speed={0.0001} color={0xff5504} particles={100} />
+          </mesh>
+
+          <mesh position={[0, 0, 4]}>
+            <mesh position={[0, 1, 0]}>
+              <CubeFireParticle
+                speed={0.0001}
+                color={0x000000}
+                particles={200}
+              />
+            </mesh>
+            <CubeFireParticle speed={0.001} color={0xff5504} particles={25} />
+          </mesh>
+
+          <Simple_Concert_Stage scale={0.2} position={[0, 0.25, -5]} />
         </mesh>
       </mesh>
     </mesh>
