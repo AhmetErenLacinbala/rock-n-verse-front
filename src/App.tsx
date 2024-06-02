@@ -20,11 +20,12 @@ import {
 import { ReactLenis, useLenis } from "lenis/react";
 import { useWindowScrollPositions } from "./hooks/my_hooks";
 import * as THREE from "three";
-import { CubeFireParticle, Fire } from "./comps/Particles";
+import { CubeFireParticle, Fire, StarParticle } from "./comps/Particles";
 import GridPlane from "./models/GridPlane";
 import { Bloom, EffectComposer } from "@react-three/postprocessing";
 import { CubeByJc } from "@models/Cubebyjc";
 import { PerspectiveCamera } from "@theatre/r3f";
+import { Planet2 } from "@models/Planet2";
 
 interface CylinderProps extends MeshProps {
   position?: Vector3 | [number, number, number];
@@ -104,7 +105,6 @@ function App() {
             <Bloom mipmapBlur luminanceThreshold={1} />
             <TheComp scrollCount={scrollCount} />
             <Environment path="cube" />
-            <OrbitControls />
           </EffectComposer>
         </Canvas>
       </div>
@@ -116,7 +116,6 @@ function App() {
             position: "absolute",
             top: "0",
             color: "black",
-            visibility: "hidden",
           }}
         >
           <div
@@ -268,7 +267,8 @@ function TheComp(props) {
   const helloWordRef = useRef();
   const [hover, setHover] = useState<boolean>(false);
   const cubeParticleRef = useRef();
-
+  const allMeshRef = useRef();
+  const planet3ref = useRef();
   useFrame((state, delta) => (cubeParticleRef.current.rotation.y += delta));
   useEffect(() => {
     console.log(scrollCount, "true");
@@ -277,7 +277,14 @@ function TheComp(props) {
   }, [scrollCount]);
 
   useEffect(() => {
+    allMeshRef.current.rotation.z = 0;
+  }, []);
+  useEffect(() => {
     console.log("scrollcount: ", scrollCount);
+    if (scrollCount > 16 && allMeshRef.current.rotation.z < Math.PI / 2) {
+      allMeshRef.current.rotation.z = -scrollCount / 10 + 16 / 10;
+      planet3ref.current.position.y += scrollCount / 100;
+    }
     if (scrollCount > 6) {
       tokenRef.current.visible = true;
       tokenRef.current.position.x = scrollCount / 1 - 14;
@@ -289,7 +296,17 @@ function TheComp(props) {
   });
 
   return (
-    <mesh>
+    <mesh ref={allMeshRef} rotation={[0, 0, 0]}>
+      <mesh>
+        <StarParticle particles={300} color={0xff8888} />
+      </mesh>
+      <mesh
+        ref={planet3ref}
+        rotation={[Math.PI / 2, 0, 0]}
+        position={[-30, -50, 0]}
+      >
+        <Planet2 />
+      </mesh>
       <mesh ref={tokenRef} position={[-2, 0, 0]}>
         <pointLight
           position={[0, 10, 10]}
@@ -345,7 +362,9 @@ function TheComp(props) {
             scale={[-1, 1, 1]}
           />
 
-          <mesh position={[0, 1, 0]}>
+          {/*
+
+           <mesh position={[0, 1, 0]}>
             <mesh position={[0, 1, 0]}>
               <CubeFireParticle speed={0.001} color={0x000000} particles={50} />
             </mesh>
@@ -358,12 +377,13 @@ function TheComp(props) {
                 speed={0.0001}
                 color={0x000000}
                 particles={200}
-              />
+                />
             </mesh>
             <CubeFireParticle speed={0.001} color={0xff5504} particles={25} />
           </mesh>
 
           <Simple_Concert_Stage scale={0.2} position={[0, 0.25, -5]} />
+        */}
         </mesh>
       </mesh>
     </mesh>

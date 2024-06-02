@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import { useEffect, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
+import { useGLTF } from "@react-three/drei";
 
 export function CubeParticle({ count = 10, temp = new THREE.Object3D() }) {
   const instancedMeshRef = useRef();
@@ -155,3 +156,51 @@ export function CubeFireParticle(props: ParticleProps) {
     />
   );
 }
+
+export function StarParticle(props: ParticleProps) {
+  const { particles, color } = props;
+  const { nodes, materials } = useGLTF("/star.glb");
+  const ref = useRef<THREE.InstancedMesh>(null!);
+  const particleCount = particles;
+  const positions = useRef(
+    new Array(particleCount).fill(0).map(() => ({
+      x: Math.random() * 300 - 150,
+      y: Math.random() * 300 - 150,
+      z: Math.random() * 300 - 150,
+      rotation: Math.random() * Math.PI * 2, // Initial rotation angle
+    }))
+  );
+
+  useEffect(() => {
+    const geometry = nodes.Icosphere.geometry;
+    const material = new THREE.MeshStandardMaterial({
+      color: color,
+      emissive: color,
+      emissiveIntensity: 10,
+    });
+
+    ref.current.geometry = geometry;
+    ref.current.material = material;
+
+    const dummy = new THREE.Object3D();
+    positions.current.forEach((pos, i) => {
+      dummy.position.set(pos.x, pos.y, pos.z);
+      dummy.rotation.set(pos.rotation, pos.rotation, pos.rotation); // Set initial rotation
+      dummy.updateMatrix();
+      ref.current.setMatrixAt(i, dummy.matrix);
+    });
+
+    ref.current.instanceMatrix.needsUpdate = true;
+  }, []);
+
+  return (
+    <instancedMesh
+      position={[0, 0, 0]}
+      rotation={[0, 0, 0]}
+      ref={ref}
+      args={[undefined, undefined, particleCount]}
+    />
+  );
+}
+
+useGLTF.preload("/star.glb");
