@@ -25,6 +25,7 @@ import GridPlane from "./models/GridPlane";
 import { Bloom, EffectComposer } from "@react-three/postprocessing";
 import { CubeByJc } from "@models/Cubebyjc";
 import { PerspectiveCamera } from "@theatre/r3f";
+import ShaderPlane from "@comps/ShaderPlane";
 
 interface CylinderProps extends MeshProps {
   position?: Vector3 | [number, number, number];
@@ -337,31 +338,18 @@ function TheComp(props) {
           intensity={Math.PI / 2}
         />
 
-        <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, 0, 0]}>
+        <ShaderPlane></ShaderPlane>
+        <mesh
+          visible={true}
+          rotation={[Math.PI / 2, 0, 0]}
+          position={[0, 0, 0]}
+        >
           <GridPlane scrollCount={scrollCount} />
           <GridPlane
             scrollCount={scrollCount}
             position={[0, -0.0001, -4.5]}
             scale={[-1, 1, 1]}
           />
-
-          <mesh position={[0, 1, 0]}>
-            <mesh position={[0, 1, 0]}>
-              <CubeFireParticle speed={0.001} color={0x000000} particles={50} />
-            </mesh>
-            <CubeFireParticle speed={0.0001} color={0xff5504} particles={100} />
-          </mesh>
-
-          <mesh position={[0, 0, 4]}>
-            <mesh position={[0, 1, 0]}>
-              <CubeFireParticle
-                speed={0.0001}
-                color={0x000000}
-                particles={200}
-              />
-            </mesh>
-            <CubeFireParticle speed={0.001} color={0xff5504} particles={25} />
-          </mesh>
 
           <Simple_Concert_Stage scale={0.2} position={[0, 0.25, -5]} />
         </mesh>
