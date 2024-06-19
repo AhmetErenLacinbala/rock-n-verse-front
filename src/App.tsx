@@ -105,6 +105,7 @@ function App() {
             <Bloom mipmapBlur luminanceThreshold={1} />
             <TheComp scrollCount={scrollCount} />
             <Environment path="cube" />
+            <OrbitControls />
           </EffectComposer>
         </Canvas>
       </div>
@@ -116,6 +117,7 @@ function App() {
             position: "absolute",
             top: "0",
             color: "black",
+            visibility: "hidden",
           }}
         >
           <div
@@ -297,15 +299,16 @@ function TheComp(props) {
 
   return (
     <mesh ref={allMeshRef} rotation={[0, 0, 0]}>
-      <mesh>
-        <StarParticle particles={300} color={0xff8888} />
-      </mesh>
+      <mesh>{/*<StarParticle particles={300} color={0xff8888} />*/}</mesh>
       <mesh
         ref={planet3ref}
         rotation={[Math.PI / 2, 0, 0]}
         position={[-30, -50, 0]}
       >
-        <Planet2 />
+        {/*
+
+          <Planet2 />
+  */}
       </mesh>
       <mesh ref={tokenRef} position={[-2, 0, 0]}>
         <pointLight
@@ -362,28 +365,34 @@ function TheComp(props) {
             scale={[-1, 1, 1]}
           />
 
-          {/*
-
-           <mesh position={[0, 1, 0]}>
+          <group visible={false}>
             <mesh position={[0, 1, 0]}>
-              <CubeFireParticle speed={0.001} color={0x000000} particles={50} />
-            </mesh>
-            <CubeFireParticle speed={0.0001} color={0xff5504} particles={100} />
-          </mesh>
-
-          <mesh position={[0, 0, 4]}>
-            <mesh position={[0, 1, 0]}>
+              <mesh position={[0, 1, 0]}>
+                <CubeFireParticle
+                  speed={0.001}
+                  color={0x000000}
+                  particles={50}
+                />
+              </mesh>
               <CubeFireParticle
                 speed={0.0001}
-                color={0x000000}
-                particles={200}
-                />
+                color={0xff5504}
+                particles={100}
+              />
             </mesh>
-            <CubeFireParticle speed={0.001} color={0xff5504} particles={25} />
-          </mesh>
 
+            <mesh position={[0, 0, 4]}>
+              <mesh position={[0, 1, 0]}>
+                <CubeFireParticle
+                  speed={0.0001}
+                  color={0x000000}
+                  particles={200}
+                />
+              </mesh>
+              <CubeFireParticle speed={0.001} color={0xff5504} particles={25} />
+            </mesh>
+          </group>
           <Simple_Concert_Stage scale={0.2} position={[0, 0.25, -5]} />
-        */}
         </mesh>
       </mesh>
     </mesh>

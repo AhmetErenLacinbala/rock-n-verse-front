@@ -5,25 +5,53 @@ Command: npx gltfjsx@6.2.16 ./src/models/gridPlane.glb
 
 import React, { useRef } from "react";
 import { useGLTF } from "@react-three/drei";
-
-export default function GridPlane(props) {
-  const { nodes, materials } = useGLTF("/gridPlane.glb");
-  console.log("aa", materials["Material.033"]);
-  return (
-    <group {...props} dispose={null}>
-      <mesh material={"attach"} geometry={nodes.Plane005.geometry}>
-        <meshStandardMaterial
+/**
+ 
+<meshStandardMaterial
           color={0xff5504}
           emissive={0xff5504}
           emissiveIntensity={0}
         ></meshStandardMaterial>
-      </mesh>
-      <mesh geometry={nodes.Plane005_1.geometry} material={"attach"}>
-        <meshStandardMaterial
+
+
+
+              <meshStandardMaterial
           color={0xff5504}
           emissive={0xff5504}
           emissiveIntensity={10}
         ></meshStandardMaterial>
+ */
+
+const vertexShader = `
+
+
+void main(){
+    vec4 v = modelViewMatrix * vec4(position, 1.0);
+    gl_Position = projectionMatrix * v;
+    gl_Position /= gl_Position.w;
+    gl_Position.xy = floor(gl_Position.xy * 200.f) / 200.f * gl_Position.w;
+}
+`;
+const fragmentShader = `
+void main(){
+    gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+}
+`;
+export default function GridPlane(props) {
+  const { nodes, materials } = useGLTF("/gridPlane.glb");
+  return (
+    <group {...props} dispose={null}>
+      <mesh material={"attach"} geometry={nodes.Plane005.geometry}>
+        <shaderMaterial
+          fragmentShader={fragmentShader}
+          vertexShader={vertexShader}
+        ></shaderMaterial>
+      </mesh>
+      <mesh geometry={nodes.Plane005_1.geometry} material={"attach"}>
+        <shaderMaterial
+          fragmentShader={fragmentShader}
+          vertexShader={vertexShader}
+        ></shaderMaterial>
       </mesh>
     </group>
   );
